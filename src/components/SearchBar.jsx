@@ -1,34 +1,23 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useSearch } from "../contexts/SearchContext";
 import "./SearchBar.css";
 
 export default function SearchBar() {
   const { searchShows, clearResults } = useSearch();
-  const [query, setQuery] = useState("");
-  const [type, setType] = useState("shows");
-  const [queryError, setQueryError] = useState("");
 
-  const validate = () => {
-    if (!query.trim()) {
-      setQueryError("O campo de busca é obrigatório.");
-      return false;
-    }
-    if (query.trim().length < 2) {
-      setQueryError("Digite pelo menos 2 caracteres.");
-      return false;
-    }
-    setQueryError("");
-    return true;
-  };
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
-  const handleSearch = () => {
-    if (!validate()) return;
-    searchShows(query.trim(), type);
+  const onSubmit = (data) => {
+    searchShows(data.query, "shows");
   };
 
   const handleClear = () => {
-    setQuery("");
-    setQueryError("");
+    reset();
     clearResults();
   };
 
@@ -38,28 +27,25 @@ export default function SearchBar() {
       <div className="search-card__row">
         <div className="search-card__input-wrapper">
           <input
-            className={`search-card__input ${queryError ? "search-card__input--error" : ""}`}
-            type="text"
+            className={`search-card__input ${errors.query ? "search-card__input--error" : ""}`}
             placeholder="Ex: Breaking Bad, Game of Thrones..."
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              if (queryError) setQueryError("");
-            }}
-            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            {...register("query", {
+              required: "O campo de busca é obrigatório.",
+              minLength: {
+                value: 2,
+                message: "Digite pelo menos 2 caracteres.",
+              },
+            })}
           />
-          {queryError && <p className="search-card__error">{queryError}</p>}
+          {errors.query && (
+            <p className="search-card__error">{errors.query.message}</p>
+          )}
         </div>
 
-        <select
-          className="search-card__select"
-          value={type}
-          onChange={(e) => setType(e.target.value)}
+        <button
+          className="search-card__btn-search"
+          onClick={handleSubmit(onSubmit)}
         >
-          <option value="shows">Séries / Shows</option>
-        </select>
-
-        <button className="search-card__btn-search" onClick={handleSearch}>
           Buscar
         </button>
         <button className="search-card__btn-clear" onClick={handleClear}>
