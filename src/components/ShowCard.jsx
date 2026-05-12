@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./ShowCard.css";
 
 export default function ShowCard({ item }) {
-  const show = item.show || item.person;
+  const show = item.show;
   const [expanded, setExpanded] = useState(false);
 
   const imageUrl =
