@@ -30,10 +30,7 @@ export function SearchProvider({ children }) {
   const searchShows = useCallback(async (query, type) => {
     dispatch({ type: "FETCH_START" });
     try {
-      const url =
-        type === "people"
-          ? `https://api.tvmaze.com/search/people?q=${encodeURIComponent(query)}`
-          : `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`;
+      const url = `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(query)}`;
 
       const res = await fetch(url);
       if (!res.ok) throw new Error("Erro ao buscar dados.");
